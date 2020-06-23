@@ -10,9 +10,9 @@ exports[`Should test ExpenseListItem if data provided 1`] = `
     </h3>
   </Link>
   <p>
-    195000
-     -- 
-    -345600000
+    195,000
+    --
+    December 28th, 1969
   </p>
 </div>
 `;
