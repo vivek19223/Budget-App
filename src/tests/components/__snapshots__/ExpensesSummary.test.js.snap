@@ -1,0 +1,24 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Test ExpensesSummery Correctly for 1 expense 1`] = `
+<div>
+  <h1>
+    Viewing 
+    1
+     expense totalling 
+    11,195
+     
+  </h1>
+</div>
+`;
+
+exports[`Test ExpensesSummery with multiple expense correctly Correctly 1`] = `
+<div>
+  <h1>
+    Viewing 
+    3
+     expenses totalling 
+    210,695
+  </h1>
+</div>
+`;
