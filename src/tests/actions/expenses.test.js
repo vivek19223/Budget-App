@@ -8,6 +8,7 @@ import {
   setExpenses,
   startSetExpenses,
   startRemoveExpense,
+  startEditExpense,
 } from '../../actions/expenses';
 import expenses from '../fixtures/expenses';
 import database from '../../firebase/firebase';
@@ -31,16 +32,16 @@ test ('should setup remove expense action object', () => {
   });
 });
 
-test('Should remove the expense from the firebase', async()=>{
-  const store = createMockStore( {} )
-  await store.dispatch(startRemoveExpense( { id: expenses[0].id}))
-  const action = store.getActions()
-  console.log(action)
-  expect(action[0]).toEqual({
+test ('Should remove the expense from the firebase', async () => {
+  const store = createMockStore ({});
+  await store.dispatch (startRemoveExpense ({id: expenses[0].id}));
+  const action = store.getActions ();
+  console.log (action);
+  expect (action[0]).toEqual ({
     type: 'REMOVE_EXPENSE',
-    id: 0
-  })
-})
+    id: 0,
+  });
+});
 
 test ('should setup edit expense action object', () => {
   const action = editExpense ('123abc', {note: 'abc'});
@@ -51,6 +52,19 @@ test ('should setup edit expense action object', () => {
     updates: {
       note: 'abc',
     },
+  });
+});
+
+test ('Should edit expenses from firebase', async () => {
+  const store = createMockStore ({});
+  const id = expenses[0].id;
+  const updates = {amount: 222};
+  await store.dispatch (startEditExpense (id, updates));
+  const action = store.getActions ();
+  expect (action[0]).toEqual ({
+    type: 'EDIT_EXPENSE',
+    id,
+    updates,
   });
 });
 
@@ -120,14 +134,13 @@ test ('should setup set expenses action object with date', () => {
 // Need to fix as ID coming from database is string where our dummy data id is integer. Will work fine with string data
 test ('Should fetch the expenses from the firebase', async () => {
   const store = createMockStore ({});
-  await store.dispatch(startSetExpenses())
-  const action = store.getActions()
+  await store.dispatch (startSetExpenses ());
+  const action = store.getActions ();
 
   // expect(action[0]).toEqual({
   //   type : 'SET_EXPENSE',
   //   expenses
   // })
 
-  expect(action[0].expenses.length).toBe(3)
+  expect (action[0].expenses.length).toBe (3);
 });
-
