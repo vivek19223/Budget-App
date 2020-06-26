@@ -1,5 +1,6 @@
 import expensesReducer from '../../reducers/expenses'
 import expenses from '../fixtures/expenses'
+import { setExpenses } from '../../actions/expenses';
 
 test('Should set default set',()=>{
     const state = expensesReducer(undefined,{type:'@@INIT'});
@@ -61,4 +62,13 @@ test('Should not edit an expense if id not matched',()=>{
     }
     const state = expensesReducer(expenses,action)
     expect(state.find((expense)=> expenses[1].id === expense.id).description).toBe('Rent')
+})
+
+test('Should test set Expense',()=>{
+    const action = {
+        type : 'SET_EXPENSE',
+        expenses : [expenses[1]]
+    }
+    const state = expensesReducer(expenses,action)
+    expect(state).toEqual([expenses[1]])
 })

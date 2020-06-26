@@ -1,10 +1,25 @@
 import configureMockStore from 'redux-mock-store';
 import thunk from 'redux-thunk';
-import {startAddExpense,addExpense, editExpense, removeExpense} from '../../actions/expenses';
+import {
+  startAddExpense,
+  addExpense,
+  editExpense,
+  removeExpense,
+  setExpenses,
+  startSetExpenses,
+} from '../../actions/expenses';
 import expenses from '../fixtures/expenses';
-import database from '../../firebase/firebase'
+import database from '../../firebase/firebase';
 
 const createMockStore = configureMockStore ([thunk]);
+
+beforeEach (async () => {
+  const expenseData = {};
+  expenses.forEach (({id, description, note, amount, createdAt}) => {
+    expenseData[id] = {description, note, amount, createdAt};
+  });
+  await database.ref ('expenses').set (expenseData);
+});
 
 test ('should setup remove expense action object', () => {
   const action = removeExpense ({id: '123abc'});
@@ -36,61 +51,68 @@ test ('should setup add expense action object with provided value', () => {
   });
 });
 
-test('should add expense to database and store',async ()=>{
-  const store = createMockStore({});
+test ('should add expense to database and store', async () => {
+  const store = createMockStore ({});
   const expenseData = {
-    description : 'Mouse',
-    amount : 300,
-    note : 'This is better',
-    createdAt : 1000
-  }
-   await store.dispatch(startAddExpense(expenseData))
-   const data =  store.getActions()
-   expect(data[0]).toEqual({
-     type: 'ADD_EXPENSE',
-     expense : {
-       id : expect.any(String),
-       ...expenseData
-     }
-   })
-   const snapshot = await database.ref(`expenses/${data[0].expense.id}`).once('value')
-   expect(snapshot.val()).toEqual(expenseData)
+    description: 'Mouse',
+    amount: 300,
+    note: 'This is better',
+    createdAt: 1000,
+  };
+  await store.dispatch (startAddExpense (expenseData));
+  const data = store.getActions ();
+  expect (data[0]).toEqual ({
+    type: 'ADD_EXPENSE',
+    expense: {
+      id: expect.any (String),
+      ...expenseData,
+    },
+  });
+  const snapshot = await database
+    .ref (`expenses/${data[0].expense.id}`)
+    .once ('value');
+  expect (snapshot.val ()).toEqual (expenseData);
+});
 
-})
-
-test('should add expense with defaults to database and store',async ()=>{
-  const store = createMockStore({});
+test ('should add expense with defaults to database and store', async () => {
+  const store = createMockStore ({});
   const expenseData = {
-    description : '',
-    amount : 0,
-    note : '',
-    createdAt : 0
-  }
-   await store.dispatch(startAddExpense({}))
-   const data =  store.getActions()
-   expect(data[0]).toEqual({
-     type: 'ADD_EXPENSE',
-     expense : {
-       id : expect.any(String),
-       ...expenseData
-     }
-   })
-   const snapshot = await database.ref(`expenses/${data[0].expense.id}`).once('value')
-   expect(snapshot.val()).toEqual(expenseData)
+    description: '',
+    amount: 0,
+    note: '',
+    createdAt: 0,
+  };
+  await store.dispatch (startAddExpense ({}));
+  const data = store.getActions ();
+  expect (data[0]).toEqual ({
+    type: 'ADD_EXPENSE',
+    expense: {
+      id: expect.any (String),
+      ...expenseData,
+    },
+  });
+  const snapshot = await database
+    .ref (`expenses/${data[0].expense.id}`)
+    .once ('value');
+  expect (snapshot.val ()).toEqual (expenseData);
+});
 
-})
+test ('should setup set expenses action object with date', () => {
+  const action = setExpenses (expenses);
+  expect (action).toEqual ({
+    type: 'SET_EXPENSE',
+    expenses,
+  });
+});
 
-// test ('should setup add expense action object with default value', () => {
-//   const expense = addExpense ({});
+// Need to fix as ID coming from database is string where our dummy data id is integer. Will work fine with string data
+// test ('Should fetch the expenses from the firebase', async () => {
+//   const store = createMockStore ({});
+//   await store.dispatch(startSetExpenses())
+//   const action = store.getActions()
 
-//   expect (expense).toEqual ({
-//     type: 'ADD_EXPENSE',
-//     expense: {
-//       id: expect.any (String),
-//       description: '',
-//       amount: 0,
-//       note: '',
-//       createdAt: 0,
-//     },
-//   });
+//   expect(action[0]).toEqual({
+//     type : 'SET_EXPENSE',
+//     expenses
+//   })
 // });

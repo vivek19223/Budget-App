@@ -1,30 +1,32 @@
 import {v4 as uuid} from 'uuid';
-import database from '../firebase/firebase'
+import database from '../firebase/firebase';
 
 //Create addExpense
-export const addExpense = (expense) => ({
-  type : 'ADD_EXPENSE',
-  expense
-})
+export const addExpense = expense => ({
+  type: 'ADD_EXPENSE',
+  expense,
+});
 
-export const startAddExpense = (expenseData = {})=>{
-  return (dispatch) =>{
+export const startAddExpense = (expenseData = {}) => {
+  return dispatch => {
     const {
-      description =  '',
+      description = '',
       note = '',
-      amount =0,
+      amount = 0,
       createdAt = 0,
-    } = expenseData
+    } = expenseData;
 
-    const expense = { description, note, amount, createdAt }
-    return database.ref('expenses').push(expense).then((ref)=>{
-      dispatch(addExpense({
-        id : ref.key,
-        ...expense
-      }))
-    })
-  }
-}
+    const expense = {description, note, amount, createdAt};
+    return database.ref ('expenses').push (expense).then (ref => {
+      dispatch (
+        addExpense ({
+          id: ref.key,
+          ...expense,
+        })
+      );
+    });
+  };
+};
 
 //Create removeExpense
 export const removeExpense = ({id}) => ({
@@ -38,3 +40,23 @@ export const editExpense = (id, updates) => ({
   id,
   updates,
 });
+
+export const setExpenses = expenses => ({
+  type: 'SET_EXPENSE',
+  expenses,
+});
+
+export const startSetExpenses = () => {
+  return dispatch => {
+    const expenses = [];
+    return database.ref ('expenses').once ('value').then (snapshot => {
+      snapshot.forEach (childSnapshot => {
+        expenses.push ({
+          id: childSnapshot.key,
+          ...childSnapshot.val (),
+        });
+      });
+      dispatch (setExpenses (expenses));
+    });
+  };
+};
