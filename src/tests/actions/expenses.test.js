@@ -14,13 +14,15 @@ import expenses from '../fixtures/expenses';
 import database from '../../firebase/firebase';
 
 const createMockStore = configureMockStore ([thunk]);
+const uid = 'thisismytestuid'
+const defaultAuthObject = { auth : { uid }}
 
 beforeEach (async () => {
   const expenseData = {};
   expenses.forEach (({id, description, note, amount, createdAt}) => {
     expenseData[id] = {description, note, amount, createdAt};
   });
-  await database.ref ('expenses').set (expenseData);
+  await database.ref (`users/${uid}/expenses`).set (expenseData);
 });
 
 test ('should setup remove expense action object', () => {
@@ -33,7 +35,7 @@ test ('should setup remove expense action object', () => {
 });
 
 test ('Should remove the expense from the firebase', async () => {
-  const store = createMockStore ({});
+  const store = createMockStore (defaultAuthObject);
   await store.dispatch (startRemoveExpense ({id: expenses[0].id}));
   const action = store.getActions ();
   console.log (action);
@@ -56,7 +58,7 @@ test ('should setup edit expense action object', () => {
 });
 
 test ('Should edit expenses from firebase', async () => {
-  const store = createMockStore ({});
+  const store = createMockStore (defaultAuthObject);
   const id = expenses[0].id;
   const updates = {amount: 222};
   await store.dispatch (startEditExpense (id, updates));
@@ -78,7 +80,7 @@ test ('should setup add expense action object with provided value', () => {
 });
 
 test ('should add expense to database and store', async () => {
-  const store = createMockStore ({});
+  const store = createMockStore (defaultAuthObject);
   const expenseData = {
     description: 'Mouse',
     amount: 300,
@@ -95,13 +97,13 @@ test ('should add expense to database and store', async () => {
     },
   });
   const snapshot = await database
-    .ref (`expenses/${data[0].expense.id}`)
+    .ref (`users/${uid}/expenses/${data[0].expense.id}`)
     .once ('value');
   expect (snapshot.val ()).toEqual (expenseData);
 });
 
 test ('should add expense with defaults to database and store', async () => {
-  const store = createMockStore ({});
+  const store = createMockStore (defaultAuthObject);
   const expenseData = {
     description: '',
     amount: 0,
@@ -118,7 +120,7 @@ test ('should add expense with defaults to database and store', async () => {
     },
   });
   const snapshot = await database
-    .ref (`expenses/${data[0].expense.id}`)
+    .ref (`users/${uid}/expenses/${data[0].expense.id}`)
     .once ('value');
   expect (snapshot.val ()).toEqual (expenseData);
 });
@@ -133,7 +135,7 @@ test ('should setup set expenses action object with date', () => {
 
 // Need to fix as ID coming from database is string where our dummy data id is integer. Will work fine with string data
 test ('Should fetch the expenses from the firebase', async () => {
-  const store = createMockStore ({});
+  const store = createMockStore (defaultAuthObject);
   await store.dispatch (startSetExpenses ());
   const action = store.getActions ();
 
