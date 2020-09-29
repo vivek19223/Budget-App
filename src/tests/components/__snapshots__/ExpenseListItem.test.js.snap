@@ -1,18 +1,29 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
 exports[`Should test ExpenseListItem if data provided 1`] = `
-<div>
-  <Link
-    to="/edit/1"
-  >
-    <h3>
+<Link
+  className="list-item"
+  to="/edit/1"
+>
+  <div>
+    <h3
+      className="list-item__title"
+    >
       Rent
     </h3>
-  </Link>
-  <p>
-    195,000
-    --
-    December 28th, 1969
-  </p>
-</div>
+    <span
+      className="list-item__sub-title"
+    >
+      December 28th, 1969
+    </span>
+  </div>
+  <div>
+    <h3
+      className="list-item-data"
+    >
+       
+      195,000
+    </h3>
+  </div>
+</Link>
 `;

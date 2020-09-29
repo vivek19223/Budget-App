@@ -2,8 +2,8 @@
 
 exports[`Should test Dashboard page correctly 1`] = `
 <div>
-  <Connect(ExpenseListFilters) />
   <Connect(ExpensesSummary) />
+  <Connect(ExpenseListFilters) />
   <Connect(ExpenseList) />
 </div>
 `;
